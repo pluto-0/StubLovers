@@ -88,7 +88,9 @@ def fill_pitchers_data(conn, cur, data):
 if __name__ == '__main__':
     conn = sqlite3.connect('MLB.db')
     cur = conn.cursor()
-    # get all of this season's batting data so far
-    # hitting_data = batting_stats_bref(2024)
+    hitting_data = batting_stats_bref(2024)
     pitching_data = pitching_stats_bref(2024)
+    #make_hitters_table(conn, cur, hitting_data)
+    #make_pitchers_table(conn, cur, pitching_data)
+    fill_hitters_table(conn, cur, hitting_data)
     fill_pitchers_data(conn, cur, pitching_data)
