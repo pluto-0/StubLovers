@@ -6,19 +6,25 @@ from pprint import pprint
 
 # Only gets 1 page right now
 def get_players():
-    response = requests.get('https://mlb24.theshow.com/apis/items.json')
-    if response.status_code != 200:
-        print("Error fetching items data from MLB The Show API, existing program")
-        exit(-1)
-    data = response.json()['items']
-
-    entries = []
-    desired_fields = ['name', 'ovr', 'is_hitter', 'is_live_set', 'uuid', 'trend', 'position']
-    for item in data:
-        entry = []
-        for field in desired_fields:
-            entry.append(item[field])
-        entries.append(tuple(entry))
+    entries = [] 
+    desired_fields = ['name', 'ovr', 'is_hitter', 'is_live_set', 'uuid', 'trend', 'display_position']
+    url = 'https://mlb24.theshow.com/apis/items.json?type=mlb_card'
+    response = requests.get('https://mlb24.theshow.com/apis/items.json?type=mlb_card')
+    entry_count = 1
+    for i in range(1, response.json()['total_pages'] + 1):
+        print('parsing page ', i, ' out of ', response.json()['total_pages'])
+        response = requests.get(url + '&page=' + str(i))
+        if response.status_code != 200:
+            print("Error fetching items data from MLB The Show API, existing program")
+            exit(-1)
+        data = response.json()['items']
+        for item in data:
+            entry = [entry_count]
+            if item['is_live_set']:
+                for field in desired_fields:
+                    entry.append(item[field])
+                entries.append(tuple(entry))
+                entry_count += 1
     return entries
 
 def make_players_table(conn, cur):
@@ -30,15 +36,19 @@ def make_players_table(conn, cur):
             query += f'{field} {types[field]}, '
         else:
             query += f'{field} {types[field]});'
-    print(query)
     cur.execute(query)
+    conn.commit()
+
+def fill_players_table(conn, cur, data):
+    query = "INSERT OR REPLACE INTO ShowPlayers VALUES(" + "?, " * (len(data[0]) - 1) + "?);"
+    cur.executemany(query, data)
     conn.commit()
 
 if __name__ == '__main__':
     conn = sqlite3.connect('MLB.db')
     cur = conn.cursor()
     make_players_table(conn, cur)
-
+    fill_players_table(conn, cur, get_players())
 '''
 {'age': 25,
  'arm_accuracy': 30,

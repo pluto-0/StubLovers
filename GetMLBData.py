@@ -57,7 +57,7 @@ def fill_hitters_table(conn, cur, data):
         print("Different number of stats for different players, exiting without changing database")
         exit(-1)
 
-    query = "INSERT INTO Hitters VALUES(" + "?, " * (len(entries[0]) - 1) + "?);"
+    query = "INSERT OR REPLACE INTO Hitters VALUES(" + "?, " * (len(entries[0]) - 1) + "?);"
     cur.executemany(query, entries)
     conn.commit()
 
@@ -81,7 +81,7 @@ def fill_pitchers_data(conn, cur, data):
         print("Different number of stats for different players, exiting without changing database")
         exit(-1)
 
-    query = "INSERT INTO Pitchers VALUES(" + "?, " * (len(entries[0]) - 1) + "?);"
+    query = "INSERT OR REPLACE INTO Pitchers VALUES(" + "?, " * (len(entries[0]) - 1) + "?);"
     cur.executemany(query, entries)
     conn.commit()
 
