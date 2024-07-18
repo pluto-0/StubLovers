@@ -46,7 +46,7 @@ def fill_hitters_table(conn, cur, data):
         entry = [i]
         for col in data:
             if i in data[col] and col == "Name":
-                entry.append(data[col][i].encode('utf-8'))
+                entry.append(data[col][i])
             elif i in data[col] and (data[col].dtype == 'int64' or data[col].dtype == 'float64'):
                 entry.append(data[col][i].item())
         if len(entry) > 1:
@@ -69,7 +69,7 @@ def fill_pitchers_data(conn, cur, data):
         entry = [id_counter]
         for col in data:
             if i in data[col] and col == 'Name':
-                entry.append(data[col][i].encode('utf-8'))
+                entry.append(data[col][i])
             elif i in data[col] and (data[col].dtype == 'int64' or data[col].dtype == 'float64'):
                 entry.append(data[col][i].item())
         if len(entry) > 1:
