@@ -2,6 +2,7 @@ import pandas as pd
 import sqlite3
 from pprint import pprint
 from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.model_selection import train_test_split as split
 from sklearn.metrics import accuracy_score
 
@@ -9,7 +10,7 @@ conn = sqlite3.connect('MLB.db')
 cur = conn.cursor()
 
 X = ['g', 'pa', 'ops', 'h', 'doubles', 'triples', 'hr', 'rbi']
-y = 'ovr'
+y = 'rarity'
 
 cols_from_hitters = ['name', 'g', 'pa', 'ops', 'h', 'doubles', 'triples', 'hr', 'rbi']
 
@@ -28,8 +29,15 @@ df = pd.merge(show_df, hitter_df, how='left', on='name')
 for element in X + [y]:
     df = df[df[element].notna()]
 
-linear_model = LinearRegression()
+train_df, test_df = split(df, test_size=.15, random_state=1)
+scores = {}
 
-#train_df, test_df = split(df, test_size=.15, random_state=1)
-linear_model.fit(df[X], df[y])
-print(linear_model.score(df[X], df[y]))
+for i in range(1, 11):
+    for j in range(1, 11):
+        for k in range(1, 11):
+            layer_sizes = (i, j, k)
+            nn = MLPClassifier(layer_sizes)
+            print('training model of size ', layer_sizes)
+            nn.fit(train_df[X], train_df[y])
+            scores[layer_sizes] = nn.score(test_df[X], test_df[y])
+pprint(scores)
