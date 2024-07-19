@@ -7,7 +7,7 @@ from pprint import pprint
 # Only gets 1 page right now
 def get_players():
     entries = [] 
-    desired_fields = ['name', 'ovr', 'is_hitter', 'is_live_set', 'uuid', 'trend', 'display_position']
+    desired_fields = ['name', 'ovr', 'is_hitter', 'is_live_set', 'uuid', 'trend', 'display_position', 'rarity']
     url = 'https://mlb24.theshow.com/apis/items.json?type=mlb_card'
     response = requests.get('https://mlb24.theshow.com/apis/items.json?type=mlb_card')
     entry_count = 1
@@ -29,7 +29,7 @@ def get_players():
 
 def make_players_table(conn, cur):
     desired_fields = ['name', 'ovr', 'is_hitter', 'is_live_set', 'uuid', 'trend', 'position']
-    types = {'name': 'TEXT', 'ovr': 'INT', 'is_hitter': 'INT', 'is_live_set': 'INT', 'uuid': 'TEXT', 'trend': 'TEXT', 'position': 'TEXT'}
+    types = {'name': 'TEXT', 'ovr': 'INT', 'is_hitter': 'INT', 'is_live_set': 'INT', 'uuid': 'TEXT', 'trend': 'TEXT', 'position': 'TEXT', 'rarity': 'TEXT'}
     query = """CREATE TABLE IF NOT EXISTS ShowPlayers(id INT PRIMARY KEY, """
     for i, field in enumerate(desired_fields):
         if i != len(desired_fields) - 1:
